@@ -21,7 +21,7 @@ func NewProducer() *Producer {
 		Balancer:     &kafka.LeastBytes{},
 		WriteTimeout: 5 * time.Second,
 		RequiredAcks: kafka.RequireOne,
-		// Automatic topic creation is enabled in docker-compose
+		// Topics are created at startup by EnsureTopics.
 	}}
 }
 

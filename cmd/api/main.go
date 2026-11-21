@@ -252,6 +252,12 @@ func main() {
 		log.Fatalf("redis: %v", err)
 	}
 
+	topicCtx, cancelTopics := context.WithTimeout(ctx, time.Minute)
+	if err := kafka.EnsureTopics(topicCtx, models.EventPostCreated, models.EventPostInteraction); err != nil {
+		log.Fatalf("kafka: %v", err)
+	}
+	cancelTopics()
+
 	producer := kafka.NewProducer()
 	defer producer.Close()
 

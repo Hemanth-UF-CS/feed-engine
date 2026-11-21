@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/Hemanth-UF-CS/feed-engine/internal/cache"
 	"github.com/Hemanth-UF-CS/feed-engine/internal/db"
@@ -29,6 +30,12 @@ func main() {
 	if err := redisCache.Ping(ctx); err != nil {
 		log.Fatalf("redis: %v", err)
 	}
+
+	topicCtx, cancelTopics := context.WithTimeout(ctx, time.Minute)
+	if err := kafka.EnsureTopics(topicCtx, models.EventPostCreated, models.EventPostInteraction); err != nil {
+		log.Fatalf("kafka: %v", err)
+	}
+	cancelTopics()
 
 	worker := fanout.NewWorker(database, redisCache)
 
