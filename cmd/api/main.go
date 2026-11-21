@@ -12,10 +12,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/cache"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/db"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/kafka"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/models"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/cache"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/db"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/kafka"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/models"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -50,11 +50,13 @@ func (s *server) createUser(w http.ResponseWriter, r *http.Request) {
 		Username string `json:"username"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.Username == "" {
-		writeErr(w, http.StatusBadRequest, "username required"); return
+		writeErr(w, http.StatusBadRequest, "username required")
+		return
 	}
 	u, err := s.db.CreateUser(r.Context(), body.Username)
 	if err != nil {
-		writeErr(w, http.StatusConflict, "username already taken"); return
+		writeErr(w, http.StatusConflict, "username already taken")
+		return
 	}
 	writeJSON(w, http.StatusCreated, u)
 }
@@ -63,11 +65,13 @@ func (s *server) createUser(w http.ResponseWriter, r *http.Request) {
 func (s *server) getUser(w http.ResponseWriter, r *http.Request) {
 	id, err := pathInt(r, "id")
 	if err != nil {
-		writeErr(w, http.StatusBadRequest, "invalid user id"); return
+		writeErr(w, http.StatusBadRequest, "invalid user id")
+		return
 	}
 	u, err := s.db.GetUser(r.Context(), id)
 	if err != nil {
-		writeErr(w, http.StatusNotFound, "user not found"); return
+		writeErr(w, http.StatusNotFound, "user not found")
+		return
 	}
 	writeJSON(w, http.StatusOK, u)
 }
@@ -76,16 +80,19 @@ func (s *server) getUser(w http.ResponseWriter, r *http.Request) {
 func (s *server) followUser(w http.ResponseWriter, r *http.Request) {
 	followerID, err := pathInt(r, "id")
 	if err != nil {
-		writeErr(w, http.StatusBadRequest, "invalid user id"); return
+		writeErr(w, http.StatusBadRequest, "invalid user id")
+		return
 	}
 	var body struct {
 		TargetID int `json:"target_id"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.TargetID == 0 {
-		writeErr(w, http.StatusBadRequest, "target_id required"); return
+		writeErr(w, http.StatusBadRequest, "target_id required")
+		return
 	}
 	if err := s.db.Follow(r.Context(), followerID, body.TargetID); err != nil {
-		writeErr(w, http.StatusInternalServerError, err.Error()); return
+		writeErr(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 	writeJSON(w, http.StatusOK, map[string]string{"status": "following"})
 }
@@ -97,11 +104,13 @@ func (s *server) createPost(w http.ResponseWriter, r *http.Request) {
 		Content string `json:"content"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.Content == "" || body.UserID == 0 {
-		writeErr(w, http.StatusBadRequest, "user_id and content required"); return
+		writeErr(w, http.StatusBadRequest, "user_id and content required")
+		return
 	}
 	p, err := s.db.CreatePost(r.Context(), body.UserID, body.Content)
 	if err != nil {
-		writeErr(w, http.StatusInternalServerError, err.Error()); return
+		writeErr(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	ev := models.PostCreatedEvent{
@@ -123,11 +132,13 @@ func (s *server) createPost(w http.ResponseWriter, r *http.Request) {
 func (s *server) getPost(w http.ResponseWriter, r *http.Request) {
 	id, err := pathInt(r, "id")
 	if err != nil {
-		writeErr(w, http.StatusBadRequest, "invalid post id"); return
+		writeErr(w, http.StatusBadRequest, "invalid post id")
+		return
 	}
 	p, err := s.db.GetPost(r.Context(), id)
 	if err != nil {
-		writeErr(w, http.StatusNotFound, "post not found"); return
+		writeErr(w, http.StatusNotFound, "post not found")
+		return
 	}
 	writeJSON(w, http.StatusOK, p)
 }
@@ -136,13 +147,15 @@ func (s *server) getPost(w http.ResponseWriter, r *http.Request) {
 func (s *server) likePost(w http.ResponseWriter, r *http.Request) {
 	postID, err := pathInt(r, "id")
 	if err != nil {
-		writeErr(w, http.StatusBadRequest, "invalid post id"); return
+		writeErr(w, http.StatusBadRequest, "invalid post id")
+		return
 	}
 	var body struct {
 		UserID int `json:"user_id"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.UserID == 0 {
-		writeErr(w, http.StatusBadRequest, "user_id required"); return
+		writeErr(w, http.StatusBadRequest, "user_id required")
+		return
 	}
 
 	ev := models.InteractionEvent{
@@ -164,7 +177,8 @@ func (s *server) likePost(w http.ResponseWriter, r *http.Request) {
 func (s *server) getFeed(w http.ResponseWriter, r *http.Request) {
 	userID, err := pathInt(r, "user_id")
 	if err != nil {
-		writeErr(w, http.StatusBadRequest, "invalid user id"); return
+		writeErr(w, http.StatusBadRequest, "invalid user id")
+		return
 	}
 
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
@@ -175,7 +189,8 @@ func (s *server) getFeed(w http.ResponseWriter, r *http.Request) {
 
 	postIDs, err := s.cache.GetFeed(r.Context(), userID, offset, limit)
 	if err != nil {
-		writeErr(w, http.StatusInternalServerError, err.Error()); return
+		writeErr(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	if len(postIDs) == 0 {
@@ -185,7 +200,8 @@ func (s *server) getFeed(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := s.db.GetPostsByIDs(r.Context(), postIDs)
 	if err != nil {
-		writeErr(w, http.StatusInternalServerError, err.Error()); return
+		writeErr(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	// Return feed in the same order as Redis (newest first)

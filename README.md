@@ -56,6 +56,7 @@ A distributed feed generation service modelled after Reddit/Twitter-style social
 ```bash
 make up       # starts Postgres, Redis, Kafka, api, 2× consumer
 make seed     # creates users, follow, post, reads Bob's feed
+scripts/smoke_test.sh   # end-to-end check that a post reaches a follower's feed (also run in CI)
 make down     # tears everything down
 ```
 
@@ -87,7 +88,7 @@ posts            — id, user_id, content, likes, created_at
 processed_events — event_id (idempotency log)
 ```
 
-## Simulate production load
+## Fan-out with 100 followers
 
 ```bash
 # Create 100 users, have them all follow user 1, post 50 times, read feeds

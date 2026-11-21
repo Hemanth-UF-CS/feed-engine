@@ -8,11 +8,11 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/cache"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/db"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/fanout"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/kafka"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/models"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/cache"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/db"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/fanout"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/kafka"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/models"
 )
 
 func main() {

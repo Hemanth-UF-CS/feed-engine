@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/models"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

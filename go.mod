@@ -1,4 +1,4 @@
-module github.com/S-HEMANTH-REDDY/feed-engine
+module github.com/Hemanth-UF-CS/feed-engine
 
 go 1.21
 

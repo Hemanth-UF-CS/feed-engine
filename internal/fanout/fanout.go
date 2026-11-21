@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/cache"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/db"
-	"github.com/S-HEMANTH-REDDY/feed-engine/internal/models"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/cache"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/db"
+	"github.com/Hemanth-UF-CS/feed-engine/internal/models"
 )
 
 // Worker processes Kafka messages and fans post events out to follower feeds.
